@@ -56,4 +56,9 @@ When the first part was finished I tried to made the indexing faster. Indexing t
 
 With the current structure it is possible to make the Readers concurrent in a workerpool, after doing this and enabling 4 workers, the indexing took __14.55569812s__
 
-# How to build
+# How to build and start
+1. Install GO (`brew install go`)
+2. Get the package `go get github.com/ajdevries/indicia`
+3. Build it `cd $GOPATH/src/github.com/ajdevries/indicia` and `go build`
+4. Start it `./indicia`
+5. Open browser `http://localhost:9000`
