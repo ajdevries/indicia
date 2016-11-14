@@ -20,7 +20,8 @@ func TestIndex(t *testing.T) {
 	s, _ := newBoltStorage()
 	defer s.Close()
 
-	Index(&Options{URL: ts.URL, Lister: newS3Lister, Reader: newS3Reader, Storage: s})
+	i := newIndicia(ts.URL, newS3Lister, newS3Reader, s)
+	i.Start()
 
 	photos := s.Search("key%")
 	if len(photos) != 5 {
