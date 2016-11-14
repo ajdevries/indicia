@@ -20,7 +20,7 @@ func TestIndex(t *testing.T) {
 	s, _ := newBoltStorage()
 	defer s.Close()
 
-	i := newIndicia(ts.URL, newS3Lister, newS3Reader, s)
+	i := newIndicia(ts.URL, newS3Lister, newS3Reader, s, 1)
 	i.Start()
 
 	photos := s.Search("key%")

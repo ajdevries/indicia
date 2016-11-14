@@ -47,4 +47,13 @@ photos := s.Search("test%") // returns a slice containing one pointer to a Photo
 ### Indicia
 The component that glues every thing together. First it lists all the photos from a `Lister` component (S3 bucket). Then it reads and parses the EXIF tags using a `Reader`,
 and then is stores the photo and their tags in to a `Storage` engine, i.e. `BoltStorage`.
+
+### HTTP Server
+This is used to display the photos including the meta data and search them.
+
+# Performance
+When the first part was finished I tried to made the indexing faster. Indexing the 129 photos with one `Reader` took __53.864118121s__.
+
+With the current structure it is possible to make the Readers concurrent in a workerpool, after doing this and enabling 4 workers, the indexing took __14.55569812s__
+
 # How to build
