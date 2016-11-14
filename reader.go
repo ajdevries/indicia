@@ -51,7 +51,9 @@ func (f *S3Reader) parseExif(reader io.Reader) (map[string]string, error) {
 // of the S3Reader
 func (f *S3Reader) Walk(name exif.FieldName, tag *tiff.Tag) error {
 	s, _ := tag.StringVal()
-	f.tags[string(name)] = s
+	if s != "" {
+		f.tags[string(name)] = s
+	}
 	return nil
 }
 
