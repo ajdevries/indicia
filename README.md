@@ -44,4 +44,7 @@ s.Save("test.jpg", map[string]string{"Make": "Apple"})
 photos := s.Search("test%") // returns a slice containing one pointer to a Photo struct
 ```
 
+### Indicia
+The component that glues every thing together. First it lists all the photos from a `Lister` component (S3 bucket). Then it reads and parses the EXIF tags using a `Reader`,
+and then is stores the photo and their tags in to a `Storage` engine, i.e. `BoltStorage`.
 # How to build
