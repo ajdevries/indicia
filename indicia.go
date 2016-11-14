@@ -43,7 +43,6 @@ func (i *Indicia) Start() {
 	var wg sync.WaitGroup
 
 	i.listerResult = make(chan string)
-	start := time.Now()
 	log.Printf("Getting photos from %s\n", i.URL)
 	l := i.Lister(i.URL)
 	list, _ := l.List()
@@ -56,6 +55,8 @@ func (i *Indicia) Start() {
 		}
 		close(i.listerResult)
 	}()
+
+	start := time.Now()
 
 	for n := 0; n < i.NumberOfReaders; n++ {
 		wg.Add(1)

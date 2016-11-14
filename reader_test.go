@@ -42,6 +42,17 @@ func TestParseImage(t *testing.T) {
 	EqualsTag(t, tags, "Make", "NIKON CORPORATION")
 }
 
+func TestParseImageFromFile(t *testing.T) {
+	reader := newFileReader(".")
+	tags, err := reader.ReadAndParse("test_image.png")
+
+	if err != nil {
+		t.Fatalf("Got an error: %q", err)
+	}
+	EqualsTag(t, tags, "Model", "NIKON D750")
+	EqualsTag(t, tags, "Make", "NIKON CORPORATION")
+}
+
 func EqualsTag(t *testing.T, tags map[string]string, name, value string) {
 	if tags[name] != value {
 		t.Fatalf("Expecting tag with key '%v' and value '%v', but was %q", name, value, tags[name])

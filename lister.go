@@ -2,8 +2,12 @@ package main
 
 import (
 	"encoding/xml"
+	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
+	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -17,6 +21,30 @@ type ListBucketResult struct {
 // Implementation of Lister interface, specialized for (public) S3 buckets
 type S3Lister struct {
 	url string
+}
+
+type FileLister struct {
+	S3Lister
+	root string
+}
+
+func (f *FileLister) List() (result []string, err error) {
+	result = []string{}
+	count:=0
+	filepath.Walk(f.root, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return nil
+		}
+		if !info.IsDir() {
+			fmt.Printf("\r%d", count)
+			count+=1
+			if r, err := regexp.MatchString("\\.jpg|\\.png", strings.ToLower(info.Name())); err == nil && r {
+				result = append(result, path[len(f.root)+1:len(path)])
+			}
+		}
+		return nil
+	})
+	return result, nil
 }
 
 // Implementation of the Lister interface, expects the ListBuckerResult XML format
@@ -50,6 +78,10 @@ func (s *S3Lister) List() (result []string, err error) {
 
 func newS3Lister(url string) Lister {
 	return &S3Lister{url: url}
+}
+
+func newFileLister(root string) Lister {
+	return &FileLister{root: root}
 }
 
 // Interface that returns a list of strings containing image names that can be

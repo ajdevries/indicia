@@ -6,14 +6,22 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"path"
+	"fmt"
+	"path/filepath"
 )
 
 // S3Reader can read images from an HTTP server (S3 in this case) given a
 // base URL.
 type S3Reader struct {
 	base string
-	tags map[string]string
+	Tags map[string]string
+}
+
+type FileReader struct {
+	S3Reader
+	root string
 }
 
 // Implementation of the Reader interface. When URL can't be found or image is invalid
@@ -35,15 +43,26 @@ func (s *S3Reader) ReadAndParse(name string) (tags map[string]string, err error)
 	return
 }
 
+func (f *FileReader) ReadAndParse(name string) (tags map[string]string, err error) {
+	p := filepath.Join(f.root, name)
+	file, err := os.Open(p)
+	if err != nil {
+		fmt.Printf("Couldn't parse %v, %q\n", p, err)
+		return nil, err
+	}
+	tags, err = f.parseExif(file)
+	return
+}
+
 // Private method for parsing the EXIF fields based on a the io.Reader interface
 func (f *S3Reader) parseExif(reader io.Reader) (map[string]string, error) {
 	e, err := exif.Decode(reader)
 	if err != nil {
 		return nil, err
 	}
-	f.tags = make(map[string]string)
+	f.Tags = make(map[string]string)
 	e.Walk(f)
-	return f.tags, nil
+	return f.Tags, nil
 }
 
 // Implementation of exif.Walker interface, is called for every EXIF field that is parsed
@@ -52,9 +71,14 @@ func (f *S3Reader) parseExif(reader io.Reader) (map[string]string, error) {
 func (f *S3Reader) Walk(name exif.FieldName, tag *tiff.Tag) error {
 	s, _ := tag.StringVal()
 	if s != "" {
-		f.tags[string(name)] = s
+		f.Tags[string(name)] = s
 	}
 	return nil
+}
+
+// Creates a new file reader
+func newFileReader(root string) Reader {
+	return &FileReader{root: root}
 }
 
 // Creates a new S3 Reader that implements the Reader interface for parsing images

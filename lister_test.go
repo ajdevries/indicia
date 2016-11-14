@@ -51,3 +51,12 @@ func TestS3ListerValidXML(t *testing.T) {
 		t.Fatalf("Expecting key 'only_one_key.jpg' but got %q", k)
 	}
 }
+
+func TestFileLister(t *testing.T) {
+	f := newFileLister(".")
+	files, _ := f.List()
+	file := files[0]
+	if file != "test_image.png" {
+		t.Fatalf("Expecting key 'test_image.png' but got %q", file)
+	}
+}

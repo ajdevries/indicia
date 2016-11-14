@@ -6,15 +6,15 @@ import (
 
 var (
 	currentVersion  = "1.0"
-	bucketURL       = flag.String("url", "http://s3.amazonaws.com/waldo-recruiting", "URL of the S3 bucket")
-	numberOfReaders = flag.Int("numberOfReaders", 4, "Number of concurrent readers")
+	bucketURL       = flag.String("url", "/Photos", "File location of the photos")
+	numberOfReaders = flag.Int("numberOfReaders", 16, "Number of concurrent readers")
 )
 
 func main() {
 	flag.Parse()
 	s, _ := newBoltStorage()
 	defer s.Close()
-	i := newIndicia(*bucketURL, newS3Lister, newS3Reader, s, *numberOfReaders)
+	i := newIndicia(*bucketURL, newFileLister, newFileReader, s, *numberOfReaders)
 	go func() {
 		i.Start()
 	}()
