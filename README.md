@@ -26,4 +26,22 @@ lister := newS3Lister("http://s3.amazonaws.com/waldo-recruiting")
 urls, err := lister.List()
 ```
 
+### Storage
+Interface for storing images and there EXIF data. First implementation is the `BoltStorage` implementation. It
+is possible to Save and Search for images. With the Search method a SQL like syntax is possible, i.e. `%test%` returns all
+photos that contain the keyword test in the file name.
+
+Usage:
+
+```go
+s, err := newBoltStorage()
+if err != nil {
+  t.Fatalf("Can't create Bolt storage!")
+}
+defer s.Close()
+
+s.Save("test.jpg", map[string]string{"Make": "Apple"})
+photos := s.Search("test%") // returns a slice containing one pointer to a Photo struct
+```
+
 # How to build
