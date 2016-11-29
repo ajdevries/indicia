@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"path"
+	"strings"
 )
 
 // S3Reader can read images from an HTTP server (S3 in this case) given a
@@ -50,9 +51,9 @@ func (f *S3Reader) parseExif(reader io.Reader) (map[string]string, error) {
 // and this fieldname and value (as string) is placed in the tags member
 // of the S3Reader
 func (f *S3Reader) Walk(name exif.FieldName, tag *tiff.Tag) error {
-	s, _ := tag.StringVal()
+	s := tag.String()
 	if s != "" {
-		f.tags[string(name)] = s
+		f.tags[string(name)] = strings.Replace(s, "\"", "", -1)
 	}
 	return nil
 }
